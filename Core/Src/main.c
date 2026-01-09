@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "usb_host.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -48,7 +47,8 @@ I2S_HandleTypeDef hi2s3;
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-
+char hum[60];
+char tmp[60];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,7 +57,6 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S3_Init(void);
 static void MX_SPI1_Init(void);
-void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
 
@@ -76,7 +75,11 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+	HAL_Delay(1000);
 
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+	HAL_Delay(1000);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -102,7 +105,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USB_HOST_Init();
   /* USER CODE BEGIN 2 */
-
+  lcd_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -110,9 +113,18 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    MX_USB_HOST_Process();
-
     /* USER CODE BEGIN 3 */
+	  DHT_data d = DHT_getData(DHT11);
+
+	  	  lcd_clear();
+
+	  	  sprintf(hum, "Humidity: %.0f", d.hum);
+	  	  sprintf(tmp, "Temperature: %.0f", d.temp);
+
+	  	  lcd_print_string_at(hum, 0, 0);
+	  	  lcd_print_string_at(tmp, 0, 1);
+
+	  	  HAL_delay(2000);
   }
   /* USER CODE END 3 */
 }
