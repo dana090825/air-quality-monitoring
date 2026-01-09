@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usb_host.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -46,6 +47,8 @@ I2S_HandleTypeDef hi2s3;
 
 SPI_HandleTypeDef hspi1;
 
+TIM_HandleTypeDef htim1;
+
 /* USER CODE BEGIN PV */
 char hum[60];
 char tmp[60];
@@ -57,6 +60,8 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S3_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_TIM1_Init(void);
+void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
 
@@ -104,6 +109,7 @@ int main(void)
   MX_I2S3_Init();
   MX_SPI1_Init();
   MX_USB_HOST_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   lcd_init();
   /* USER CODE END 2 */
@@ -113,18 +119,20 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+    MX_USB_HOST_Process();
+
     /* USER CODE BEGIN 3 */
 	  DHT_data d = DHT_getData(DHT11);
 
-	  	  lcd_clear();
+	  lcd_clear();
 
-	  	  sprintf(hum, "Humidity: %.0f", d.hum);
-	  	  sprintf(tmp, "Temperature: %.0f", d.temp);
+	  sprintf(hum, "Humidity: %.0f", d.hum);
+	  sprintf(tmp, "Temperature: %.0f", d.temp);
 
-	  	  lcd_print_string_at(hum, 0, 0);
-	  	  lcd_print_string_at(tmp, 0, 1);
+	  lcd_print_string_at(hum, 0, 0);
+	  lcd_print_string_at(tmp, 0, 1);
 
-	  	  HAL_delay(2000);
+	  HAL_delay(2000);
   }
   /* USER CODE END 3 */
 }
@@ -281,6 +289,52 @@ static void MX_SPI1_Init(void)
 }
 
 /**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 64-1;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 65536-1;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -305,6 +359,9 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, LD4_Pin|LD3_Pin|LD5_Pin|LD6_Pin
@@ -337,6 +394,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BOOT1_Pin */
   GPIO_InitStruct.Pin = BOOT1_Pin;
@@ -390,10 +454,6 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
   /* USER CODE END Error_Handler_Debug */
 }
 #ifdef USE_FULL_ASSERT
