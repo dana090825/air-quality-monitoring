@@ -27,9 +27,8 @@ static void goToInput(void) {
 	HAL_GPIO_WritePin(DHT_Port, DHT_Pin, GPIO_PIN_SET);
 
 	GPIO_InitStruct.Pin = DHT_Pin;
-	GPIO_InitStruct.Mode = GPIO_Mode_INPUT_OD;
+	GPIO_InitStruct.Mode = GPIO_Mode_INPUT;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
 	HAL_GPIO_Init(DHT_Port, &GPIO_InitStruct);
 }
