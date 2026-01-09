@@ -21,6 +21,19 @@ static void goToOutput(void) {
 	HAL_GPIO_Init(DHT_Port, &GPIO_InitStruct); //위 구조체를 바탕으로 세팅
 }
 
+static void goToInput(void) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	HAL_GPIO_WritePin(DHT_Port, DHT_Pin, GPIO_PIN_SET);
+
+	GPIO_InitStruct.Pin = DHT_Pin;
+	GPIO_InitStruct.Mode = GPIO_Mode_INPUT_OD;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+
+	HAL_GPIO_Init(DHT_Port, &GPIO_InitStruct);
+}
+
 DHT_data DHT_getData(DHT_type t) {
 	DHT_data data = {0.0f, 0.0f};
 
