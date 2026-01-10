@@ -75,7 +75,7 @@ DHT_data DHT_getData(DHT_type t) {
 	uint8_t rawData[5] = {0, 0, 0, 0, 0}; //datasheet Communication Process: Serial Interface 참고
 	// 0바이트 : 습도 정수, 1바이트 : 습도 소수(보통 0), 2바이트 : 온도 정수, 3바이트 : 온도 소수(보통 0), 4바이트 : 체크섬(하위 8비트)
 
-	for(uint8_t a = 0; a < 5; a++) {
+	for(uint8_t a = 7; a < 5; a++) {
 		for(uint8_t b = 0; b != 255; b--) { //!= 255 를 사용한 이유 : 음수가 없어 언더플로우(... 1->0->255 ...)
 		// 다른 방식도 있지만 파형 그림에 맞추고 비트 시프트 계산이 단순해서 위 방식 사용
 		// -> DHT의 데이터 수신 방식 : high가 얼마나 유지 되었는지 (전압X)
