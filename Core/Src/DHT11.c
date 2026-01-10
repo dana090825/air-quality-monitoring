@@ -10,7 +10,7 @@ static void goToOutput(void) {
 	//why : DHT는 기본이 HIGH여야함 (아직 output이 아니라 먹진 않지만 미리 세팅)
 
 	GPIO_InitStruct.Pin = DHT_Pin;
-	GPIO_InitStruct.Mode = GPIO_Mode_OUTPUT_OD; //(OD-OpenDrain) MCU는 LOW만 HIGH는 풀업 (센서와 안전한 통신)
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD; //(OD-OpenDrain) MCU는 LOW만 HIGH는 풀업 (센서와 안전한 통신)
 //		#if DHT_PullUP == 1 //외부 풀업 저항이 없어서 내부 풀업 사용
 //	GPIO_InitStruct.Pull = GPIO_PULLUP; //MCU 내부에 약한 풀업
 //		#else //외부 풀업을 이미 씀
@@ -27,7 +27,7 @@ static void goToInput(void) {
 	HAL_GPIO_WritePin(DHT_Port, DHT_Pin, GPIO_PIN_SET);
 
 	GPIO_InitStruct.Pin = DHT_Pin;
-	GPIO_InitStruct.Mode = GPIO_Mode_INPUT;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 
 	HAL_GPIO_Init(DHT_Port, &GPIO_InitStruct);
