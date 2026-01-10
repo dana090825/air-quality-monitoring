@@ -36,5 +36,13 @@ static void goToInput(void) {
 DHT_data DHT_getData(DHT_type t) {
 	DHT_data data = {0.0f, 0.0f};
 
+	uint16_t timeout = 0; //얼마나 기다렸는지 카운트하기 위한 변수
+
+	// datasheet의 20-40us 대기 대신 low가 올 때까지 기다리는 것
+	while(getLine()) { //지금 라인이 set(1)일동안 (목적 : 센서가 응답을 시작해 low가 될때까지 기다림)
+		timeout++; //while문 반복 횟수만큼 증가
+		if (timeout > DHT_timeout) return data; //타임아웃이 설정 카운트를 넘기면 실패 처리
+	}
+	timeout = 0; //다시 사용할 수 있도록 초기화
 
 }
