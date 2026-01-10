@@ -14,6 +14,6 @@ typedef struct {
 #define DHT_PullUp 0
 #define DHT_timeout 10000
 
-DHT_data DHT_getData(DHT_type t);
+DHT_data DHT_getData();
 
 #endif

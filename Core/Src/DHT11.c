@@ -36,7 +36,7 @@ static void goToInput(void) {
 	HAL_GPIO_Init(DHT_Port, &GPIO_InitStruct);
 }
 
-DHT_data DHT_getData(DHT_type t) {
+DHT_data DHT_getData() {
 	DHT_data data = {0.0f, 0.0f};
 
 	// -> 이해하려면 데이터 시트 통신을 보자!!
