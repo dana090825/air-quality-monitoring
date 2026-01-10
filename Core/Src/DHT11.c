@@ -60,7 +60,7 @@ DHT_data DHT_getData() {
 
 	while(!getLine()) {
 		timeout++;
-		if(timeout > DHT_timeout) retunn data;
+		if(timeout > DHT_timeout) return data;
 	}
 	timeout = 0;
 
