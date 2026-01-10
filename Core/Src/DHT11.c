@@ -43,7 +43,7 @@ DHT_data DHT_getData() {
 	goToOutput();
 
 	lineDown();
-	Delay(18);
+	Delay(20);
 
 	lineUp();
 	goToInput();
@@ -79,11 +79,22 @@ DHT_data DHT_getData() {
 		for(uint8_t b = 7; b != 255; b--) { //!= 255 를 사용한 이유 : 음수가 없어 언더플로우(... 1->0->255 ...)
 		// 다른 방식도 있지만 파형 그림에 맞추고 비트 시프트 계산이 단순해서 위 방식 사용
 		// -> DHT의 데이터 수신 방식 : high가 얼마나 유지 되었는지 (전압X)
-			uint8_t hT = 0, lT = 0; // highTime, longTime (시간이 아닌 횟수임!)
+			uint32_t hT = 0, lT = 0; // highTime, longTime (시간이 아닌 횟수임!)
 
 			// datasheet의 DHT Responses to MCU 참고(두 파형 그림 high 길이 비교)
-			while(!getLine()) lT++;
-			while(getLine()) hT++;
+			while(!getLine()) {
+				timeout++;
+				if(timeout > DHT_timeout) return data;
+				lT++;
+			}
+			timeout = 0;
+
+			while(getLine()) {
+				timeout++;
+				if(timeout > DHT_timeout) return data;
+				hT++;
+			}
+			timeout = 0;
 
 			//hT이 lT보다 더 오래 유지되면 1
 			if(hT > lT) rawData[a] |= (1<<b); //rawData의 a번째 바이트의 b번째 비트를 or연산자로 1로 변경
