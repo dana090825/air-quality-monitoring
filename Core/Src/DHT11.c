@@ -89,4 +89,12 @@ DHT_data DHT_getData() {
 			if(hT > lT) rawData[a] |= (1<<b); //rawData의 a번째 바이트의 b번째 비트를 or연산자로 1로 변경
 		}
 	}
+
+	//체크섬 (앞 4바이트 데이터를 다 더한 후 가장 아래 8비트만 잘라서 보낸 값)
+	if ((uint8_t)(rawData[0] + rawData[1] + rawData[2] + rawData[3]) == rawData[4]) {
+		data.hum = (float)rawData[0];
+		data.temp = (float)rawData[2];
+	}
+
+	return data;
 }
