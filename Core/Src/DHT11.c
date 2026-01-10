@@ -69,4 +69,5 @@ DHT_data DHT_getData(DHT_type t) {
 		if (timeout > DHT_timeout) return data;
 	}
 	timeout = 0;
+	//-> while은 데이터 시트 MCU Sends out Start Signal to DHT 보고 이해
 }
