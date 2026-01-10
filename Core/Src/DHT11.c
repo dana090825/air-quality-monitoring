@@ -1,5 +1,8 @@
 #include "DHT.h"
 
+#define lineDown() HAL_GPIO_WritePin(DHT_Port, DHT_Pin, GPIO_PIN_RESET)
+#define lineUp() HAL_GPIO_WritePin(DHT_Port, DHT_Pin, GPIO_PIN_SET)
+#define getLine() (HAL_GPIO_ReadPin(DHT_Port, DHT_Pin) == GPIO_PIN_SET) //지금 걸려 있는 핀 라인을 읽어온다, set(1)인지 반별한다
 #define Delay(d) HAL_Delay(d)
 
 //DHT 데이터 핀을 출력 모드로 바꾸기
@@ -35,6 +38,16 @@ static void goToInput(void) {
 
 DHT_data DHT_getData(DHT_type t) {
 	DHT_data data = {0.0f, 0.0f};
+
+	// -> 이해하려면 데이터 시트 통신을 보자!!
+	goToOutput();
+
+	lineDown();
+	Delay(18);
+
+	lineUp();
+	goToInput();
+	//DHT11 응답과 데이터를 보내게 만드는 절차 (DHT11 datasheet)
 
 	uint16_t timeout = 0; //얼마나 기다렸는지 카운트하기 위한 변수
 
