@@ -58,4 +58,15 @@ DHT_data DHT_getData(DHT_type t) {
 	}
 	timeout = 0; //다시 사용할 수 있도록 초기화
 
+	while(!getLine()) {
+		timeout++;
+		if(timeout > DHT_timeout) retunn data;
+	}
+	timeout = 0;
+
+	while(getLine()) {
+		timeout++;
+		if (timeout > DHT_timeout) return data;
+	}
+	timeout = 0;
 }
